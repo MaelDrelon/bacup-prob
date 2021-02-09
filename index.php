@@ -1,117 +1,143 @@
 <?php
-include "class.php";
 include "trieur.php";
+include "class.php";
+
 
 
 // On enregistre notre autoload.
 function chargerClasse($classname)
 {
-  require $classname.'.php';
+    require $classname.'php';
 }
 
+
+
 spl_autoload_register('chargerClasse');
+ 
 
 session_start(); // On appelle session_start() APRÈS avoir enregistré l'autoload.
+ 
 
 if (isset($_GET['deconnexion']))
 {
-  session_destroy();
-  header('Location: .');
-  exit();
+    session_destroy();
+    header('Location: .');
+    exit();
 }
+ 
 
-$db = new PDO('mysql:host=192.168.65.227; dbname=MaelDrelonJeuCombat; charset=utf8','mael', '');
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
 
-$manager = new PersonnagesManager($db);
+
 
 if (isset($_SESSION['perso'])) // Si la session perso existe, on restaure l'objet.
 {
-  $perso = $_SESSION['perso'];
+    $perso = $_SESSION['perso'];
 }
+ 
+
+
+
+
+
+$db = new PDO('mysql:host=192.168.65.227;dbname=MaelDrelonJeuCombat', 'mael', '');
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
+$manager = new PersonnagesManager($db);
+ 
+
 
 if (isset($_POST['creer']) && isset($_POST['nom'])) // Si on a voulu créer un personnage.
 {
-  $perso = new Personnage(['nom' => $_POST['nom']]); // On crée un nouveau personnage.
-  
-  if (!$perso->nomValide())
-  {
-    $message = '<div id="center">Le nom choisi est invalide.</div>';
-    unset($perso);
-  }
-  elseif ($manager->exists($perso->nom()))
-  {
-    $message = '<div id="center">Le nom du personnage est déjà pris.</div>';
-    unset($perso);
-  }
-  else
-  {
-    $manager->add($perso);
-  }
-}
-
-elseif (isset($_POST['utiliser']) && isset($_POST['nom'])) // Si on a voulu utiliser un personnage.
-{
-  if ($manager->exists($_POST['nom'])) // Si celui-ci existe.
-  {
-    $perso = $manager->get($_POST['nom']);
-  }
-  else
-  {
-    $message = '<div id="center">Ce personnage n\'existe pas !</div>'; // S'il n'existe pas, on affiche ce message.
-  }
-}
-
-elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le frapper.
-{
-  if (!isset($perso))
-  {
-    $message = '<div id="center">Merci de créer un personnage ou de vous identifier.</div>';
-  }
-  else
-  {
-    if (!$manager->exists((int) $_GET['frapper']))
+    $perso = new Personnage(['nom' => $_POST['nom']]); // On crée un nouveau personnage.
+ 
+    if (!$perso->nomValide())
     {
-      $message = '<div id="center">Le personnage que vous voulez frapper n\'existe pas !</div>';
+        $message = 'Le nom choisi est invalide';
+        unset($perso);
+    }
+    elseif ($manager->exists($perso->nom()))
+    {
+        $message = 'Le nom du personnage est déja pris';
+        unset($perso);
     }
     else
     {
-      $persoAFrapper = $manager->get((int) $_GET['frapper']);
-      $retour = $perso->frapper($persoAFrapper); // On stocke dans $retour les éventuelles erreurs ou messages que renvoie la méthode frapper.
-      switch ($retour)
-      {
-        case Personnage::CEST_MOI :
-          $message = '<div id="center">Je suis plus malin que toi, mais bien essayé.</div>';
-          break;
-        
-        case Personnage::PERSONNAGE_FRAPPE :
-          $message = '<div id="center">Le personnage a bien été frappé !</div>';
-          
-          $perso->gagnerExp();
-          $manager->update($perso);
-          $manager->update($persoAFrapper);
-          
-          break;
-        
-        case Personnage::PERSONNAGE_TUE :   
-          $message = '<div id="center">Le personnage est mort !</div>';
-          
-          $perso->gagnerExp();
-          $manager->update($perso);
-          $manager->delete($persoAFrapper);?>
-            <script>
-                alert('Vous avez tué ce personnage !');
-            </script>
-            <?php
-          break;
-      }
+        $manager->add($perso);
     }
-  }
+}
+ 
+elseif (isset($_POST['Utiliser']) && isset($_POST['nom'])) // Si on a voulu utiliser un personnage.
+{
+    if ($manager->exists($_POST['nom'])) // Si celui-ci existe.
+    {
+        $perso = $manager->get($_POST['nom']);
+    }
+ 
+    else
+    {
+        $message = 'Ce personnage n\'existe pas'; // S'il n'existe pas, on affichera ce message.
+    }
+}
+ 
+elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le frapper.
+{
+    if (!isset($perso))
+    {
+        $message = 'Merci de créer un personnage ou de vous identifier.'; 
+    }
+    else
+    {
+        if (!$manager->exists((int)$_GET['frapper']))
+        {
+            $message = 'Le personnage que vous voulez frapper n\'existe pas !';
+        }
+     
+        else
+        {
+            $persoAfrapper = $manager->get((int) $_GET['frapper']);
+            $retour = $perso->frapper($persoAfrapper);  // On stocke dans $retour les éventuelles erreurs ou messages que renvoie la méthode frapper.
+ 
+            switch ($retour)
+            {
+                case Personnage::CEST_MOI;
+                $message = 'Malin, mais nan.';
+                break;
+ 
+                case Personnage::PERSONNAGE_FRAPPE;
+                $message = 'Le personnage a bien frapper !';
+ 
+                $perso->gagnerexperience();
+                 
+ 
+                $manager->update($perso);
+                $manager->update($persoAfrapper);
+                break;
+ 
+                case Personnage::PERSONNAGE_TUE;
+                $message = 'Vous avez tué ce personnage';
+ 
+                $manager->update($perso);
+                $manager->delete($persoAfrapper);
+                break; 
+ 
+                case Personnage::NIVEAU_ATTEINT;
+                $message = 'Vous avez atteint le niveau !';
+                break;               
+            }
+        }
+    }
 }
 ?>
+ 
+<!-- Fin de préréglage et préparation -->
 
 
-<!DOCTYPE html>
+
+
+<!-- Affichage sur la page -->
+
+
+
+ <!DOCTYPE html>
 <html>
   <head>
     <title>TP : Mini jeu de combat</title>
@@ -120,83 +146,86 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     <meta charset="utf-8" />
   </head>
   <body onLoad="Démarrer()" onUnLoad="Arréter()">
-  
-    <div id="center"><h1>Nombre de personnages créés : <?= $manager->count() ?></h1></div>
-    
-
+  <div id="center"><h1>Nombre de personnages créés : <?= $manager->count() ?></h1></div>
 <?php
-if (isset($message)) // Si on a un message à afficher 
-{
-  echo '<p>', $message, '</p>'; // Si oui, on l'affiche.
-}
-
-if (isset($perso)) // Si on utilise un personnage ou après en avoir créer un.
-{
+    if (isset($message)) //Si on a un message à afficher 
+    {   
+        echo '<p>', $message, '</p>'; // Si oui, on l'affiche.
+    }
+ 
+    if (isset($perso)) // Si on utilise un personnage ou après en avoir créer un
+    {
 ?>
+
+
 
 
     <p><a href="?deconnexion=1">Déconnexion</a></p>
-    
-    <fieldset>
-        <legend>
-            <h2>Mes informations</h2>
-        </legend>
-      <p>
-        <div id="text"><p>Nom : <?= htmlspecialchars($perso->nom()) ?></p>
-        <p>Dégâts : <?= $perso->degats() ?></p>
-        <p>Expérience : <?= $perso->exp() ?></p>
-        <p>Niveau : <?= $perso->lvl() ?></p>
-        </div>
-      </p>
-    </fieldset>
-    
-    
-    <fieldset>
-        <legend>
-            <h2>Qui frapper ?</h2>
-        </legend>
-      <p>
-<?php
-$persos = $manager->getList($perso->nom());
 
-if (empty($persos))
-{
-  echo 'Personne à frapper !';
-}
 
-else
-{
-  foreach ($persos as $unPerso)
-  {
-    echo '<p><a href="?frapper=', $unPerso->id(), '">', htmlspecialchars($unPerso->nom()), '</a> (dégâts : ', $unPerso->degats(), ')</p>';
-  }
-}
-?>
-    </p>
+      
+    <fieldset>
+        <legend>Mes information</legend> <!-- Information du personnage -->
+        <p>
+            <p>Nom : <?= htmlspecialchars($perso->nom()) ?></p>
+            <p>Degats : <?= $perso->degats() ?></p>
+            <p>Experience : <?= $perso->experience() ?></p>
+            <p>Niveau : <?= $perso->lvl() ?></p>
+            <p>Force : <?= $perso->puissance() ?></p>
+        </p>
     </fieldset>
 
 
-<?php
+
+
+
+
+    <fieldset>
+        <legend>Qui frapper?</legend> <!-- Liste de personnage présent -->
+        <p>
+            <p><?php
+                $persos = $manager->getList($perso->nom());
+                if (empty($persos))
+                {
+                    echo 'personnage à frapper';
+                }
+                else
+                {
+                    foreach ($persos as $unperso)
+                    echo '<a href="?frapper=', $unperso->id(), '">', htmlspecialchars($unperso->nom()),'</a><p> (Force =><strong>', $unperso->puissance(), '</strong>)', '(Degats => <strong>', $unperso->degats(),'</strong> ): ','( Experience =><strong>', $unperso->experience (),')</strong>: ','(Niveau =><strong>', $unperso->lvl(),'</strong>)</p>';
+                }
+            ?></p>
+        </p>
+    </fieldset>
+    <?php
 }
 else
 {
 ?>
+
+
+
+
+
+<!-- Création du personage -->
 <div class="espace"></div>
 <div id="container">
 <div id="center">
-    <form action="" method="post">
-        <div class="beau">
-            Nom : <input type="text" name="nom" maxlength="50" />
-            <input type="submit" value="Créer ce personnage" name="creer" />
-            <input type="submit" value="Utiliser ce personnage" name="utiliser" />
-        </div>
+        <p>
+            NOM: <input type="text" name="nom" maxlength="50">
+            <input type="submit" value="Créer ce personnage" name="creer">
+            <input type="submit" value="Utiliser ce personnage" name="Utiliser">
+        </p>
     </form>
-</div>
-</div>
-
 <?php
 }
 ?>
+
+
+
+
+
+
 <div id="horl">
     <p>
     <img src="images/dark green/space.gif" width="15" height="20">
@@ -209,13 +238,11 @@ else
     <img src="images/dark green/space.gif" width="15" height="20">
     </p>
 </div>
-  </body>
+</body>
 </html>
-
-
 <?php
-if (isset($perso)) // Si on a créé un personnage, on le stocke dans une variable session afin d'économiser une requête SQL.
+ 
+if (isset($perso))
 {
-  $_SESSION['perso'] = $perso;
+    $_SESSION['perso'] = $perso;
 }
-?>
