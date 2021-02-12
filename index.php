@@ -154,7 +154,7 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     <meta charset="utf-8" />
   </head>
   <body onLoad="Démarrer()" onUnLoad="Arréter()">
-  <div id="center"><h1>Nombre de personnages créés : <?= $manager->count() ?></h1></div>
+  <fieldset><div id="center"><h1>Nombre de personnages créés : <?= $manager->count() ?></h1></div></fieldset>
 <?php
     if (isset($message)) //Si on a un message à afficher 
     {   
@@ -165,11 +165,11 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     {
 ?>
 
-
-
-
+        
+    <div id="center">
     <p><a href="?deconnexion=1">Déconnexion</a></p>
-
+    </div>
+    </div>
 
       
     <fieldset>
