@@ -22,11 +22,11 @@ class Personnage
  
     public function frapper(Personnage $perso) //Frappe le personnage choisie
     {
-        if (!$perso->id() == $this->_id)
+        if ($perso->id() == $this->_id)
         {
             return self::CEST_MOI;
         } 
-        return $perso->recevoirDegats();
+        return $perso->recevoirDegats($this->puissance());//Reçoit la puissance du personnage avec lequel l'utilisateur utilise pour attaquer un adversaire
     }
  
     public function hydrate(array $donnees) //Créer un tableaux permettant de récupérer les données de chaque personnages
@@ -41,15 +41,15 @@ class Personnage
         }
     }
  
-    public function recevoirDegats() //Renvoie les dégats à l'ennemie choisie
+    public function recevoirDegats($degats) //Renvoie les dégats à l'ennemie choisie
     {
-        $this->_degats += 1;
+        $this->_degats += $degats; 
         if ($this->_degats >= 100)
         {
-            return self::PERSONNAGE_TUE;
+            return self::PERSONNAGE_TUE; //Renvoie le switch pour annoncé la mort de l'adversaire
         }
  
-        return self::PERSONNAGE_FRAPPE;   
+        return self::PERSONNAGE_FRAPPE;  //Renvoie la switch pour annoncé que l'attaque à correctement était effectuer
     }
  
     public function gagnerpuissance() //Gagne un niveau de puissance
@@ -64,7 +64,7 @@ class Personnage
     public function gagnerexperience () //Gagne de l'expérience
     {
         $this->_experience += 5;
-        if ($this->_experience >= 100)
+        if ($this->_experience >= 100) //Si exp > 100, ajoute 1 au lvl, 2 en puissance et retourne à 0 l'expérience
         {  
             $this->gagnerlvl();
             $this->gagnerpuissance();
@@ -75,7 +75,7 @@ class Personnage
     public function gagnerlvl() //Gagne un lvl supplémentaire
     {
         $this->_lvl += 1;
-        if ($this->_lvl >= 100) 
+        if ($this->_lvl >= 100) //Si le lvl > 100, retourne 100 au lvl. Cela évite de dépasser au dela de 100.
         {
             $this->setlvl(100);
         }

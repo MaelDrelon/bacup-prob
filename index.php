@@ -12,12 +12,11 @@ function chargerClasse($classname)
 
 
 
+
+
+
 spl_autoload_register('chargerClasse');
- 
-
 session_start(); // On appelle session_start() APRÈS avoir enregistré l'autoload.
- 
-
 if (isset($_GET['deconnexion']))
 {
     session_destroy();
@@ -25,6 +24,8 @@ if (isset($_GET['deconnexion']))
     exit();
 }
  
+
+
 
 
 
@@ -39,10 +40,16 @@ if (isset($_SESSION['perso'])) // Si la session perso existe, on restaure l'obje
 
 
 
+
+
 $db = new PDO('mysql:host=192.168.65.227;dbname=MaelDrelonJeuCombat', 'mael', '');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING); // On émet une alerte à chaque fois qu'une requête a échoué.
 $manager = new PersonnagesManager($db);
  
+
+
+
+
 
 
 if (isset($_POST['creer']) && isset($_POST['nom'])) // Si on a voulu créer un personnage.
@@ -86,7 +93,7 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     }
     else
     {
-        if (!$manager->exists((int)$_GET['frapper']))
+        if (!$manager->exists((int)$_GET['frapper'])) //Si le personnage que vous voulez attaquer n'existe plus ou pas.
         {
             $message = 'Le personnage que vous voulez frapper n\'existe pas !';
         }
@@ -98,28 +105,29 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
  
             switch ($retour)
             {
-                case Personnage::CEST_MOI;
+                case Personnage::CEST_MOI; //Si l'ID est la même que celle du personnage utiliser
                 $message = 'Malin, mais nan.';
                 break;
  
-                case Personnage::PERSONNAGE_FRAPPE;
+                case Personnage::PERSONNAGE_FRAPPE; //Si vous attaquer un personange adverse
                 $message = 'Le personnage a bien frapper !';
  
                 $perso->gagnerexperience();
-                 
  
                 $manager->update($perso);
                 $manager->update($persoAfrapper);
                 break;
  
-                case Personnage::PERSONNAGE_TUE;
+                case Personnage::PERSONNAGE_TUE; //Si vous tué le personnage adverse
                 $message = 'Vous avez tué ce personnage';
  
+                $perso->gagnerexperience();
+
                 $manager->update($perso);
                 $manager->delete($persoAfrapper);
                 break; 
  
-                case Personnage::NIVEAU_ATTEINT;
+                case Personnage::NIVEAU_ATTEINT; //Si vous gagner un niveau
                 $message = 'Vous avez atteint le niveau !';
                 break;               
             }
@@ -211,12 +219,15 @@ else
 <div class="espace"></div>
 <div id="container">
 <div id="center">
-        <p>
-            NOM: <input type="text" name="nom" maxlength="50">
-            <input type="submit" value="Créer ce personnage" name="creer">
-            <input type="submit" value="Utiliser ce personnage" name="Utiliser">
-        </p>
+  <p>
+    <form method="POST">
+          NOM: <input type="text" name="nom" maxlength="50">
+          <input type="submit" value="Créer ce personnage" name="creer">
+          <input type="submit" value="Utiliser ce personnage" name="Utiliser">
     </form>
+  </p>
+</div>
+</div>
 <?php
 }
 ?>

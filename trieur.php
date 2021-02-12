@@ -80,14 +80,14 @@ class PersonnagesManager
     {
         if (is_int($info))
         {
-            $q = $this->_db->query('SELECT id, nom, degats, lvl, experience, puissance FROM personnages WHERE id = '.$info);
+            $q = $this->_db->query('SELECT * FROM personnages WHERE id = '.$info);
             $donnees = $q->fetch(PDO::FETCH_ASSOC);
  
             return new Personnage($donnees);
         }
         else
         {
-            $q = $this->_db->prepare('SELECT id, nom, degats, experience, lvl, puissance FROM personnages WHERE nom = :nom');
+            $q = $this->_db->prepare('SELECT * FROM personnages WHERE nom = :nom');
             $q->execute([':nom' => $info]);
  
             return new Personnage($q->fetch(PDO::FETCH_ASSOC));
@@ -102,7 +102,7 @@ class PersonnagesManager
     public function getList($nom) //Récupére une liste des perso
     {
         $persos = [];
-        $q = $this->_db->prepare('SELECT id, nom, degats, experience, lvl, puissance FROM personnages WHERE nom <> :nom ORDER BY nom');
+        $q = $this->_db->prepare('SELECT * FROM personnages WHERE nom <> :nom ORDER BY nom');
         $q->execute([':nom'=> $nom]);
          
         while ($donnees = $q->fetch(PDO::FETCH_ASSOC))
