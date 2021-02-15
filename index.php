@@ -17,10 +17,11 @@ function chargerClasse($classname)
 
 spl_autoload_register('chargerClasse');
 session_start(); // On appelle session_start() APRÈS avoir enregistré l'autoload.
+
 if (isset($_GET['deconnexion']))
 {
     session_destroy();
-    header('Location: .');
+    header('Location: .'); //Destroy la session et retourne l'utilisateur au menu principal.
     exit();
 }
  
@@ -135,16 +136,12 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     }
 }
 ?>
- 
 <!-- Fin de préréglage et préparation -->
 
 
 
 
 <!-- Affichage sur la page -->
-
-
-
  <!DOCTYPE html>
 <html>
   <head>
@@ -167,13 +164,13 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
 
         
     <div id="center">
-    <p><a href="?deconnexion=1">Déconnexion</a></p>
+    <button><a href="?deconnexion=1">Déconnexion</a></button>
     </div>
     </div>
 
       
     <fieldset>
-        <legend>Mes information</legend> <!-- Information du personnage -->
+        <legend><h2>Mes informations</h2></legend> <!-- Information du personnage -->
         <p>
             <p>Nom : <?= htmlspecialchars($perso->nom()) ?></p>
             <p>Degats : <?= $perso->degats() ?></p>
@@ -189,7 +186,7 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
 
 
     <fieldset>
-        <legend>Qui frapper?</legend> <!-- Liste de personnage présent -->
+        <legend><h2>Qui frapper?</h2></legend> <!-- Liste de personnage présent -->
         <p>
             <p><?php
                 $persos = $manager->getList($perso->nom());
@@ -200,7 +197,7 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
                 else
                 {
                     foreach ($persos as $unperso)
-                    echo '<a href="?frapper=', $unperso->id(), '">', htmlspecialchars($unperso->nom()),'</a><p> (Force =><strong>', $unperso->puissance(), '</strong>)', '(Degats => <strong>', $unperso->degats(),'</strong> ): ','( Experience =><strong>', $unperso->experience (),')</strong>: ','(Niveau =><strong>', $unperso->lvl(),'</strong>)</p>';
+                    echo '<a href="?frapper=', $unperso->id(), '">', htmlspecialchars($unperso->nom()),'</a><p> (Force =><strong>', $unperso->puissance(), '</strong>) ', '(Degats => <strong>', $unperso->degats(),'</strong> ) ','( Experience =><strong>', $unperso->experience (),')</strong> ','(Niveau =><strong>', $unperso->lvl(),'</strong>)</p>';
                 }
             ?></p>
         </p>
