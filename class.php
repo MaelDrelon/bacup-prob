@@ -55,9 +55,9 @@ class Personnage
     public function gagnerpuissance() //Gagne un niveau de puissance
     {
         $this->_puissance += 2;
-        if ($this->_puissance >= 100)
+        if ($this->_puissance >= 201)
         {
-          $this->setpuissance(100);
+          $this->setpuissance(201);
         }
     }
      

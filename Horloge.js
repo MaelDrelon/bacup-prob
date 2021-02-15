@@ -5,7 +5,7 @@ var timerActif = false;
 
 if(document.images)
 {
-  chiffre = new Array(10);
+  chiffre = new Array(10); 
   chiffre[0] = new Image(); chiffre[0].src = "images/dark green/dg0.gif";
   chiffre[1] = new Image(); chiffre[1].src = "images/dark green/dg1.gif";
   chiffre[2] = new Image(); chiffre[2].src = "images/dark green/dg2.gif";
