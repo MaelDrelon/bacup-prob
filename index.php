@@ -204,7 +204,7 @@ elseif (isset($_GET['frapper'])) // Si on a cliqué sur un personnage pour le fr
     </fieldset>
     <?php
 }
-else
+else if (!isset($perso))
 {
 ?>
 

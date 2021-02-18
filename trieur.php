@@ -117,7 +117,7 @@ class PersonnagesManager
 
 
 
-    public function update(Personnage $perso) //Update les dmg du perso touché
+    public function update(Personnage $perso) //Update les dmg du perso touché, ainsi que les points d'expérience et niveaux de l'attaquand.
     {
         $q = $this->_db->prepare('UPDATE personnages SET degats = :degats, experience = :experience, lvl = :lvl, puissance = :puissance WHERE id = :id');
          

@@ -4,6 +4,14 @@
 
 body{
     background : url(gif_arène.gif);
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-attachment: fixed;
+    background-repeat: repeat-x;
+    margin-left: auto;
+    margin-right: auto;
+    width: 67, 06vw;
     background-size: cover;
     padding: 3%;
 }
@@ -18,7 +26,7 @@ body{
 }
 
 fieldset{
-    background-image: linear-gradient(to right top, #60d7db 0%, #ffffffef 100%);
+    background-image: linear-gradient(to right top, #99dd2b 0%, #68bbffef 100%);
     padding: 6px;
 }
 .espace{
